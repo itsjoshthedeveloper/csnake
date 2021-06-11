@@ -128,9 +128,18 @@ int main()
         if ((win.frame % win.fps) == 0)
         {
             s.headPosition = (position){(s.headPosition.x + s.headSpeed.x), (s.headPosition.y + s.headSpeed.y)};
+            if (s.headPosition.x < 0 || s.headPosition.x > (win.width - 1) || s.headPosition.y < 0 || s.headPosition.y > (win.height - 1))
+            {
+                break;
+            }
         }
         win.frame++;
     }
+
+    clear();
+    printw("Game over!\n");
+    refresh();
+    sleep(3);
 
     endwin();
     return 0;
