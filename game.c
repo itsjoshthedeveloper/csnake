@@ -29,6 +29,21 @@ typedef struct
     speed headSpeed;
 } snake;
 
+int kbhit(void)
+{
+    int ch = getch();
+
+    if (ch != ERR)
+    {
+        ungetch(ch);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 void draw(window win, snake s)
 {
     for (int i = -1; i <= win.height; i++)
@@ -69,6 +84,8 @@ int main()
     window win = {30, 20, 10, 0};
     snake s = {{9, 4}, {0, 0}};
 
+    int key_code;
+
     while (true)
     {
         clear(); // Clear window
@@ -77,7 +94,41 @@ int main()
         printw("frame: %d\n", win.frame);
         draw(win, s);
 
+        if (kbhit())
+        {
+            key_code = getch();
+            flushinp();
+            // printw("%d\n", key_code);
+            switch (key_code)
+            {
+            case KEY_UP:
+                s.headSpeed = (speed){0, 0};
+                s.headSpeed.y = -1;
+                break;
+            case KEY_DOWN:
+                s.headSpeed = (speed){0, 0};
+                s.headSpeed.y = 1;
+                break;
+            case KEY_LEFT:
+                s.headSpeed = (speed){0, 0};
+                s.headSpeed.x = -1;
+                break;
+            case KEY_RIGHT:
+                s.headSpeed = (speed){0, 0};
+                s.headSpeed.x = 1;
+                break;
+            default:
+                break;
+            }
+        }
+        refresh();
+
         usleep((int)((1.0 / win.fps) * 1000) * 1000);
+
+        if ((win.frame % win.fps) == 0)
+        {
+            s.headPosition = (position){(s.headPosition.x + s.headSpeed.x), (s.headPosition.y + s.headSpeed.y)};
+        }
         win.frame++;
     }
 
