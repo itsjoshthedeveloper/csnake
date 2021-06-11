@@ -69,7 +69,17 @@ int main()
     window win = {30, 20, 10, 0};
     snake s = {{9, 4}, {0, 0}};
 
-    draw(win, s);
+    while (true)
+    {
+        clear(); // Clear window
+        refresh();
+
+        printw("frame: %d\n", win.frame);
+        draw(win, s);
+
+        usleep((int)((1.0 / win.fps) * 1000) * 1000);
+        win.frame++;
+    }
 
     endwin();
     return 0;
