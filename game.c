@@ -29,6 +29,29 @@ typedef struct
     speed headSpeed;
 } snake;
 
+void draw(window win, snake s)
+{
+    for (int i = -1; i <= win.height; i++)
+    {
+        for (int j = -1; j <= win.width; j++)
+        {
+            if ((i == -1 || i == win.height) || (j == -1 || j == win.width))
+            {
+                printw("#");
+            }
+            else if (j == s.headPosition.x && i == s.headPosition.y)
+            {
+                printw("O");
+            }
+            else
+            {
+                printw(" ");
+            }
+        }
+        printw("\n");
+    }
+}
+
 int main()
 {
     initscr(); // Start curses mode
@@ -45,6 +68,8 @@ int main()
 
     window win = {30, 20, 10, 0};
     snake s = {{9, 4}, {0, 0}};
+
+    draw(win, s);
 
     endwin();
     return 0;
