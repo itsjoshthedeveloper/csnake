@@ -82,7 +82,7 @@ int main()
     sleep(3);
 
     window win = {30, 20, 10, 0};
-    snake s = {{9, 4}, {0, 0}};
+    snake s = {{9, 4}, {1, 0}};
 
     int key_code;
 
