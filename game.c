@@ -145,7 +145,7 @@ int main()
 
         usleep((int)((1.0 / win.fps) * 1000) * 1000);
 
-        if ((win.frame % win.fps) == 0)
+        if ((win.frame % (win.fps / 2)) == 0)
         {
             s.headPosition = (position){(s.headPosition.x + s.headSpeed.x), (s.headPosition.y + s.headSpeed.y)};
             if (s.headPosition.x == a.position.x && s.headPosition.y == a.position.y)
