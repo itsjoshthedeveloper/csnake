@@ -4,6 +4,7 @@
 #include <ncurses.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 typedef struct
 {
@@ -122,6 +123,30 @@ int main()
     printw("Welcome to the Snake Game\n");
     refresh();
     sleep(3);
+
+    printw("\nInstructions: Maneuver the snake to eat the apples (X). Make sure not to run into any walls or into the snake tail.\n");
+    refresh();
+    sleep(3);
+
+    printw("\nControls:\n");
+    printw("\tSnake movement: arrow keys\n");
+    refresh();
+    sleep(3);
+
+    printw("\nObjective: Get the highest score!\n");
+    refresh();
+    sleep(8);
+
+    clear();
+    printw("\nStarting in ");
+    refresh();
+    sleep(1);
+    for (int i = 3; i > 0; i--)
+    {
+        printw("%d ", i);
+        refresh();
+        sleep(1);
+    }
 
     window win = {30, 20, 10, 0};
 
