@@ -11,8 +11,9 @@ snake game in C
 - [x] Ensure apple never spawns on snake
 - [x] Handle snake tail collision
 - [x] Ensure snake can't go backwards
-- [ ] Make snake speed increase proportionally to score
+- [x] Make snake speed increase proportionally to score
 - [ ] Show game instructions and controls
 - [ ] Create difficulty levels (slug, worm, python)
 - [ ] Allow player to play again
 - [ ] Keep track of high score
+- [ ] Add good inline documentation

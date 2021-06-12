@@ -23,12 +23,12 @@ typedef struct
 {
     int x;
     int y;
-} speed;
+} direction;
 
 typedef struct
 {
     position *position;
-    speed speed;
+    direction direction;
     int length;
 } snake;
 
@@ -136,6 +136,7 @@ int main()
     apple a = {{randInt(win.width), randInt(win.height)}};
 
     int score = 0;
+    int speed = ((win.fps * 66) / (4 * score + 100));
     int key_code;
 
     while (true)
@@ -154,44 +155,46 @@ int main()
             switch (key_code)
             {
             case KEY_UP:
-                if (s.speed.y != 1)
+                if (s.direction.y != 1)
                 {
-                    s.speed = (speed){0, 0};
-                    s.speed.y = -1;
+                    s.direction = (direction){0, 0};
+                    s.direction.y = -1;
                 }
                 break;
             case KEY_DOWN:
-                if (s.speed.y != -1)
+                if (s.direction.y != -1)
                 {
-                    s.speed = (speed){0, 0};
-                    s.speed.y = 1;
+                    s.direction = (direction){0, 0};
+                    s.direction.y = 1;
                 }
                 break;
             case KEY_LEFT:
-                if (s.speed.x != 1)
+                if (s.direction.x != 1)
                 {
-                    s.speed = (speed){0, 0};
-                    s.speed.x = -1;
+                    s.direction = (direction){0, 0};
+                    s.direction.x = -1;
                 }
                 break;
             case KEY_RIGHT:
-                if (s.speed.x != -1)
+                if (s.direction.x != -1)
                 {
-                    s.speed = (speed){0, 0};
-                    s.speed.x = 1;
+                    s.direction = (direction){0, 0};
+                    s.direction.x = 1;
                 }
                 break;
             default:
                 break;
             }
         }
+        speed = ((win.fps * 66) / (4 * score + 100));
+        printw("snake speed: %.3f secs\n", speed / 30.0);
         refresh();
 
         usleep((int)((1.0 / win.fps) * 1000) * 1000);
 
-        if ((win.frame % (win.fps / 2)) == 0)
+        if ((win.frame % speed) == 0)
         {
-            position buffer = (position){(s.position[0].x + s.speed.x), (s.position[0].y + s.speed.y)};
+            position buffer = (position){(s.position[0].x + s.direction.x), (s.position[0].y + s.direction.y)};
             for (int i = 0; i < s.length; i++)
             {
                 position temp = s.position[i];
