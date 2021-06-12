@@ -154,20 +154,32 @@ int main()
             switch (key_code)
             {
             case KEY_UP:
-                s.speed = (speed){0, 0};
-                s.speed.y = -1;
+                if (s.speed.y != 1)
+                {
+                    s.speed = (speed){0, 0};
+                    s.speed.y = -1;
+                }
                 break;
             case KEY_DOWN:
-                s.speed = (speed){0, 0};
-                s.speed.y = 1;
+                if (s.speed.y != -1)
+                {
+                    s.speed = (speed){0, 0};
+                    s.speed.y = 1;
+                }
                 break;
             case KEY_LEFT:
-                s.speed = (speed){0, 0};
-                s.speed.x = -1;
+                if (s.speed.x != 1)
+                {
+                    s.speed = (speed){0, 0};
+                    s.speed.x = -1;
+                }
                 break;
             case KEY_RIGHT:
-                s.speed = (speed){0, 0};
-                s.speed.x = 1;
+                if (s.speed.x != -1)
+                {
+                    s.speed = (speed){0, 0};
+                    s.speed.x = 1;
+                }
                 break;
             default:
                 break;
