@@ -9,7 +9,8 @@ snake game in C
 - [x] Use an array of positions to keep track of snake tail
 - [x] Make snake tail grow proportionally to score
 - [x] Ensure apple never spawns on snake
-- [ ] Handle snake tail collision
+- [x] Handle snake tail collision
+- [ ] Ensure snake can't go backwards
 - [ ] Make snake speed increase proportionally to score
 - [ ] Show game instructions and controls
 - [ ] Create difficulty levels (slug, worm, python)

@@ -188,20 +188,20 @@ int main()
             }
             if (s.position[0].x == a.position.x && s.position[0].y == a.position.y)
             {
-                bool collide;
+                bool overlap;
                 do
                 {
-                    collide = false;
+                    overlap = false;
                     position tempPosition = (position){randInt(win.width), randInt(win.height)};
                     for (int i = 0; i < s.length; i++)
                     {
                         if (tempPosition.x == s.position[i].x && tempPosition.y == s.position[i].y)
                         {
-                            collide = true;
+                            overlap = true;
                             break;
                         }
                     }
-                } while (collide);
+                } while (overlap);
                 a.position = (position){randInt(win.width), randInt(win.height)};
                 score++;
 
@@ -211,7 +211,23 @@ int main()
                     fail();
                 s.position[s.length - 1] = s.position[s.length - 2];
             }
+            bool collide = false;
             if (s.position[0].x < 0 || s.position[0].x > (win.width - 1) || s.position[0].y < 0 || s.position[0].y > (win.height - 1))
+            {
+                collide = true;
+            }
+            for (int i = 1; i < s.length; i++)
+            {
+                if (collide)
+                {
+                    break;
+                }
+                if ((s.position[0].x == s.position[i].x && s.position[0].y == s.position[i].y))
+                {
+                    collide = true;
+                }
+            }
+            if (collide)
             {
                 printw("Game over!\n");
                 refresh();
