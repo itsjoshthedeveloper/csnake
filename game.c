@@ -27,8 +27,8 @@ typedef struct
 
 typedef struct
 {
-    position headPosition;
-    speed headSpeed;
+    position position[3];
+    speed speed;
 } snake;
 
 typedef struct
@@ -66,7 +66,7 @@ void draw(window win, snake s, apple a)
             {
                 printw("#");
             }
-            else if (j == s.headPosition.x && i == s.headPosition.y)
+            else if (j == s.position[0].x && i == s.position[0].y)
             {
                 printw("O");
             }
@@ -76,7 +76,24 @@ void draw(window win, snake s, apple a)
             }
             else
             {
-                printw(" ");
+                bool snakeBody = false;
+                for (int k = 1; k < (sizeof(s.position) / sizeof(s.position[0])); k++)
+                {
+                    if (j == s.position[k].x && i == s.position[k].y)
+                    {
+                        snakeBody = true;
+                        break;
+                    }
+                }
+
+                if (snakeBody)
+                {
+                    printw("o");
+                }
+                else
+                {
+                    printw(" ");
+                }
             }
         }
         printw("\n");
@@ -100,7 +117,7 @@ int main()
     sleep(3);
 
     window win = {30, 20, 10, 0};
-    snake s = {{9, 4}, {1, 0}};
+    snake s = {{{9, 4}, {8, 4}, {7, 4}}, {1, 0}};
     apple a = {{randInt(win.width), randInt(win.height)}};
 
     int score = 0;
@@ -112,7 +129,7 @@ int main()
         refresh();
 
         printw("score: %d\tframe: %d\n", score, win.frame);
-        draw(win, s, a);
+        draw(win, s, a); // Draw game
 
         if (kbhit())
         {
@@ -122,20 +139,20 @@ int main()
             switch (key_code)
             {
             case KEY_UP:
-                s.headSpeed = (speed){0, 0};
-                s.headSpeed.y = -1;
+                s.speed = (speed){0, 0};
+                s.speed.y = -1;
                 break;
             case KEY_DOWN:
-                s.headSpeed = (speed){0, 0};
-                s.headSpeed.y = 1;
+                s.speed = (speed){0, 0};
+                s.speed.y = 1;
                 break;
             case KEY_LEFT:
-                s.headSpeed = (speed){0, 0};
-                s.headSpeed.x = -1;
+                s.speed = (speed){0, 0};
+                s.speed.x = -1;
                 break;
             case KEY_RIGHT:
-                s.headSpeed = (speed){0, 0};
-                s.headSpeed.x = 1;
+                s.speed = (speed){0, 0};
+                s.speed.x = 1;
                 break;
             default:
                 break;
@@ -147,13 +164,19 @@ int main()
 
         if ((win.frame % (win.fps / 2)) == 0)
         {
-            s.headPosition = (position){(s.headPosition.x + s.headSpeed.x), (s.headPosition.y + s.headSpeed.y)};
-            if (s.headPosition.x == a.position.x && s.headPosition.y == a.position.y)
+            position buffer = (position){(s.position[0].x + s.speed.x), (s.position[0].y + s.speed.y)};
+            for (int i = 0; i < (sizeof(s.position) / sizeof(s.position[0])); i++)
+            {
+                position temp = s.position[i];
+                s.position[i] = buffer;
+                buffer = temp;
+            }
+            if (s.position[0].x == a.position.x && s.position[0].y == a.position.y)
             {
                 a.position = (position){randInt(win.width), randInt(win.height)};
                 score++;
             }
-            if (s.headPosition.x < 0 || s.headPosition.x > (win.width - 1) || s.headPosition.y < 0 || s.headPosition.y > (win.height - 1))
+            if (s.position[0].x < 0 || s.position[0].x > (win.width - 1) || s.position[0].y < 0 || s.position[0].y > (win.height - 1))
             {
                 printw("Game over!\n");
                 refresh();
