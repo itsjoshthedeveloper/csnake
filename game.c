@@ -188,6 +188,20 @@ int main()
             }
             if (s.position[0].x == a.position.x && s.position[0].y == a.position.y)
             {
+                bool collide;
+                do
+                {
+                    collide = false;
+                    position tempPosition = (position){randInt(win.width), randInt(win.height)};
+                    for (int i = 0; i < s.length; i++)
+                    {
+                        if (tempPosition.x == s.position[i].x && tempPosition.y == s.position[i].y)
+                        {
+                            collide = true;
+                            break;
+                        }
+                    }
+                } while (collide);
                 a.position = (position){randInt(win.width), randInt(win.height)};
                 score++;
 

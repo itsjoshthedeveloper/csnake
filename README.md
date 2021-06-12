@@ -8,7 +8,7 @@ snake game in C
 - [x] Add apple and score
 - [x] Use an array of positions to keep track of snake tail
 - [x] Make snake tail grow proportionally to score
-- [ ] Ensure apple never spawns on snake
+- [x] Ensure apple never spawns on snake
 - [ ] Handle snake tail collision
 - [ ] Make snake speed increase proportionally to score
 - [ ] Show game instructions and controls
