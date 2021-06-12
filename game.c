@@ -2,6 +2,8 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include <ncurses.h>
+#include <stdlib.h>
+#include <time.h>
 
 typedef struct
 {
@@ -29,6 +31,11 @@ typedef struct
     speed headSpeed;
 } snake;
 
+typedef struct
+{
+    position position;
+} apple;
+
 int kbhit(void)
 {
     int ch = getch();
@@ -44,7 +51,12 @@ int kbhit(void)
     }
 }
 
-void draw(window win, snake s)
+int randInt(int max)
+{
+    return rand() % max;
+}
+
+void draw(window win, snake s, apple a)
 {
     for (int i = -1; i <= win.height; i++)
     {
@@ -58,6 +70,10 @@ void draw(window win, snake s)
             {
                 printw("O");
             }
+            else if (j == a.position.x && i == a.position.y)
+            {
+                printw("X");
+            }
             else
             {
                 printw(" ");
@@ -69,6 +85,8 @@ void draw(window win, snake s)
 
 int main()
 {
+    srand(time(NULL));
+
     initscr(); // Start curses mode
 
     cbreak();               // Line buffering disabled
@@ -83,7 +101,9 @@ int main()
 
     window win = {30, 20, 10, 0};
     snake s = {{9, 4}, {1, 0}};
+    apple a = {{randInt(win.width), randInt(win.height)}};
 
+    int score = 0;
     int key_code;
 
     while (true)
@@ -91,8 +111,8 @@ int main()
         clear(); // Clear window
         refresh();
 
-        printw("frame: %d\n", win.frame);
-        draw(win, s);
+        printw("score: %d\tframe: %d\n", score, win.frame);
+        draw(win, s, a);
 
         if (kbhit())
         {
@@ -128,6 +148,11 @@ int main()
         if ((win.frame % win.fps) == 0)
         {
             s.headPosition = (position){(s.headPosition.x + s.headSpeed.x), (s.headPosition.y + s.headSpeed.y)};
+            if (s.headPosition.x == a.position.x && s.headPosition.y == a.position.y)
+            {
+                a.position = (position){randInt(win.width), randInt(win.height)};
+                score++;
+            }
             if (s.headPosition.x < 0 || s.headPosition.x > (win.width - 1) || s.headPosition.y < 0 || s.headPosition.y > (win.height - 1))
             {
                 printw("Game over!\n");
