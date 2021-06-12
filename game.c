@@ -27,8 +27,9 @@ typedef struct
 
 typedef struct
 {
-    position position[3];
+    position *position;
     speed speed;
+    int length;
 } snake;
 
 typedef struct
@@ -56,6 +57,12 @@ int randInt(int max)
     return rand() % max;
 }
 
+void fail(void)
+{
+    printw("Memory could not be allocated\n");
+    exit(EXIT_FAILURE);
+}
+
 void draw(window win, snake s, apple a)
 {
     for (int i = -1; i <= win.height; i++)
@@ -77,7 +84,7 @@ void draw(window win, snake s, apple a)
             else
             {
                 bool snakeBody = false;
-                for (int k = 1; k < (sizeof(s.position) / sizeof(s.position[0])); k++)
+                for (int k = 1; k < s.length; k++)
                 {
                     if (j == s.position[k].x && i == s.position[k].y)
                     {
@@ -117,7 +124,15 @@ int main()
     sleep(3);
 
     window win = {30, 20, 10, 0};
-    snake s = {{{9, 4}, {8, 4}, {7, 4}}, {1, 0}};
+
+    position *tempPtr = malloc(3 * sizeof(position));
+    if (tempPtr == NULL)
+        fail();
+    snake s = {tempPtr, {1, 0}, 3};
+    s.position[0] = (position){9, 4};
+    s.position[1] = (position){8, 4};
+    s.position[2] = (position){7, 4};
+
     apple a = {{randInt(win.width), randInt(win.height)}};
 
     int score = 0;
@@ -165,7 +180,7 @@ int main()
         if ((win.frame % (win.fps / 2)) == 0)
         {
             position buffer = (position){(s.position[0].x + s.speed.x), (s.position[0].y + s.speed.y)};
-            for (int i = 0; i < (sizeof(s.position) / sizeof(s.position[0])); i++)
+            for (int i = 0; i < s.length; i++)
             {
                 position temp = s.position[i];
                 s.position[i] = buffer;
@@ -175,6 +190,12 @@ int main()
             {
                 a.position = (position){randInt(win.width), randInt(win.height)};
                 score++;
+
+                s.length++;
+                s.position = (position *)realloc(s.position, s.length * sizeof(position));
+                if (s.position == NULL)
+                    fail();
+                s.position[s.length - 1] = s.position[s.length - 2];
             }
             if (s.position[0].x < 0 || s.position[0].x > (win.width - 1) || s.position[0].y < 0 || s.position[0].y > (win.height - 1))
             {
