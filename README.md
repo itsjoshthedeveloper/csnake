@@ -13,7 +13,7 @@ snake game in C
 - [x] Ensure snake can't go backwards
 - [x] Make snake speed increase proportionally to score
 - [x] Show game instructions and controls
-- [ ] Create difficulty levels (slug, worm, python)
+- [x] Create difficulty levels (slug, worm, python)
 - [ ] Allow player to play again
 - [ ] Keep track of high score
 - [ ] Add good inline documentation

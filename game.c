@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <math.h>
 
 typedef struct
 {
@@ -120,13 +121,16 @@ int main()
     nodelay(stdscr, TRUE);  // No delay for input
     scrollok(stdscr, TRUE); // Not sure
 
+    int fps = 30;
+    int key_code;
+
     printw("Welcome to the Snake Game\n");
     refresh();
     sleep(3);
 
     printw("\nInstructions: Maneuver the snake to eat the apples (X). Make sure not to run into any walls or into the snake tail.\n");
     refresh();
-    sleep(3);
+    sleep(5);
 
     printw("\nControls:\n");
     printw("\tSnake movement: arrow keys\n");
@@ -135,10 +139,75 @@ int main()
 
     printw("\nObjective: Get the highest score!\n");
     refresh();
-    sleep(8);
+    sleep(3);
+
+    printw("\nChoose difficulty level:\n\n");
+    int difficulty = 1;
+    const char difficulties[][6] = {"SLUG", "WORM", "PYTHON"};
+    int y, x;
+    bool choseDifficulty = false;
+    while (!choseDifficulty)
+    {
+        getyx(stdscr, y, x);
+        move(y - 1, 0);
+        clrtoeol();
+        refresh();
+
+        for (int i = 1; i <= 3; i++)
+        {
+            if (i == difficulty)
+            {
+                attron(A_STANDOUT);
+                printw("%s", difficulties[i - 1]);
+                attroff(A_STANDOUT);
+                printw(" ");
+            }
+            else
+            {
+                printw("%s ", difficulties[i - 1]);
+            }
+        }
+        printw("\n");
+        refresh();
+        if (kbhit())
+        {
+            key_code = getch();
+            flushinp();
+            switch (key_code)
+            {
+            case KEY_LEFT:
+                if (difficulty == 1)
+                {
+                    difficulty = 3;
+                }
+                else
+                {
+                    difficulty--;
+                }
+                break;
+            case KEY_RIGHT:
+                if (difficulty == 3)
+                {
+                    difficulty = 1;
+                }
+                else
+                {
+                    difficulty++;
+                }
+                break;
+            case 10:
+            case 32:
+                choseDifficulty = true;
+                break;
+            default:
+                break;
+            }
+        }
+        usleep((int)((1.0 / fps) * 1000) * 1000);
+    }
 
     clear();
-    printw("\nStarting in ");
+    printw("Starting in ");
     refresh();
     sleep(1);
     for (int i = 3; i > 0; i--)
@@ -148,7 +217,27 @@ int main()
         sleep(1);
     }
 
-    window win = {30, 20, 10, 0};
+    int width, height;
+    switch (difficulty)
+    {
+    case 1:
+        width = 30;
+        height = 15;
+        break;
+    case 2:
+        width = 20;
+        height = 10;
+        break;
+    case 3:
+        width = 14;
+        height = 6;
+        break;
+    default:
+        width = 20;
+        height = 10;
+        break;
+    }
+    window win = {fps, width, height, 0};
 
     position *tempPtr = malloc(3 * sizeof(position));
     if (tempPtr == NULL)
@@ -161,8 +250,7 @@ int main()
     apple a = {{randInt(win.width), randInt(win.height)}};
 
     int score = 0;
-    int speed = ((win.fps * 66) / (4 * score + 100));
-    int key_code;
+    int speed = ((win.fps * 66) / ((int)pow(4, difficulty) * score + 100));
 
     while (true)
     {
@@ -211,7 +299,7 @@ int main()
                 break;
             }
         }
-        speed = ((win.fps * 66) / (4 * score + 100));
+        speed = ((win.fps * 66) / ((int)pow(4, difficulty) * score + 100));
         printw("snake speed: %.3f secs\n", speed / 30.0);
         refresh();
 
