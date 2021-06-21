@@ -7,6 +7,8 @@
 #include <string.h>
 #include <math.h>
 
+#define NELEMS(x) (sizeof(x) / sizeof((x)[0]))
+
 typedef struct
 {
     int fps;
@@ -109,6 +111,73 @@ void draw(window win, snake s, apple a)
     }
 }
 
+int choose(int initialChoice, char *choices[], size_t length)
+{
+    int choice = initialChoice;
+    int y, x, key_code;
+    bool chose = false;
+    while (!chose)
+    {
+        getyx(stdscr, y, x);
+        move(y - 1, 0);
+        clrtoeol();
+        refresh();
+
+        for (int i = 1; i <= length; i++)
+        {
+            if (i == choice)
+            {
+                attron(A_STANDOUT);
+                printw("%s", choices[i - 1]);
+                attroff(A_STANDOUT);
+                printw(" ");
+            }
+            else
+            {
+                printw("%s ", choices[i - 1]);
+            }
+        }
+        printw("\n");
+        refresh();
+        if (kbhit())
+        {
+            key_code = getch();
+            flushinp();
+            switch (key_code)
+            {
+            case KEY_LEFT:
+                if (choice == 1)
+                {
+                    choice = length;
+                }
+                else
+                {
+                    choice--;
+                }
+                break;
+            case KEY_RIGHT:
+                if (choice == length)
+                {
+                    choice = 1;
+                }
+                else
+                {
+                    choice++;
+                }
+                break;
+            case 10:
+            case 32:
+                chose = true;
+                break;
+            default:
+                break;
+            }
+        }
+        usleep((int)((1.0 / 30) * 1000) * 1000);
+    }
+    return choice;
+}
+
 int main()
 {
     srand(time(NULL));
@@ -139,233 +208,184 @@ int main()
 
     printw("\nObjective: Get the highest score!\n");
     refresh();
-    sleep(3);
+    sleep(5);
 
-    printw("\nChoose difficulty level:\n\n");
-    int difficulty = 1;
-    const char difficulties[][6] = {"SLUG", "WORM", "PYTHON"};
-    int y, x;
-    bool choseDifficulty = false;
-    while (!choseDifficulty)
+    bool playing = true;
+
+    while (playing)
     {
-        getyx(stdscr, y, x);
-        move(y - 1, 0);
-        clrtoeol();
-        refresh();
+        clear();
+        printw("\nChoose difficulty level:\n\n");
+        char *difficulties[3] = {"SLUG", "WORM", "PYTHON"};
+        int difficulty = choose(1, difficulties, NELEMS(difficulties));
 
-        for (int i = 1; i <= 3; i++)
-        {
-            if (i == difficulty)
-            {
-                attron(A_STANDOUT);
-                printw("%s", difficulties[i - 1]);
-                attroff(A_STANDOUT);
-                printw(" ");
-            }
-            else
-            {
-                printw("%s ", difficulties[i - 1]);
-            }
-        }
-        printw("\n");
-        refresh();
-        if (kbhit())
-        {
-            key_code = getch();
-            flushinp();
-            switch (key_code)
-            {
-            case KEY_LEFT:
-                if (difficulty == 1)
-                {
-                    difficulty = 3;
-                }
-                else
-                {
-                    difficulty--;
-                }
-                break;
-            case KEY_RIGHT:
-                if (difficulty == 3)
-                {
-                    difficulty = 1;
-                }
-                else
-                {
-                    difficulty++;
-                }
-                break;
-            case 10:
-            case 32:
-                choseDifficulty = true;
-                break;
-            default:
-                break;
-            }
-        }
-        usleep((int)((1.0 / fps) * 1000) * 1000);
-    }
-
-    clear();
-    printw("Starting in ");
-    refresh();
-    sleep(1);
-    for (int i = 3; i > 0; i--)
-    {
-        printw("%d ", i);
+        printw("\nStarting in ");
         refresh();
         sleep(1);
-    }
-
-    int width, height;
-    switch (difficulty)
-    {
-    case 1:
-        width = 30;
-        height = 15;
-        break;
-    case 2:
-        width = 20;
-        height = 10;
-        break;
-    case 3:
-        width = 14;
-        height = 6;
-        break;
-    default:
-        width = 20;
-        height = 10;
-        break;
-    }
-    window win = {fps, width, height, 0};
-
-    position *tempPtr = malloc(3 * sizeof(position));
-    if (tempPtr == NULL)
-        fail();
-    snake s = {tempPtr, {1, 0}, 3};
-    s.position[0] = (position){9, 4};
-    s.position[1] = (position){8, 4};
-    s.position[2] = (position){7, 4};
-
-    apple a = {{randInt(win.width), randInt(win.height)}};
-
-    int score = 0;
-    int speed = ((win.fps * 66) / ((int)pow(4, difficulty) * score + 100));
-
-    while (true)
-    {
-        clear(); // Clear window
-        refresh();
-
-        printw("score: %d\tframe: %d\n", score, win.frame);
-        draw(win, s, a); // Draw game
-
-        if (kbhit())
+        for (int i = 3; i > 0; i--)
         {
-            key_code = getch();
-            flushinp();
-            // printw("%d\n", key_code);
-            switch (key_code)
-            {
-            case KEY_UP:
-                if (s.direction.y != 1)
-                {
-                    s.direction = (direction){0, 0};
-                    s.direction.y = -1;
-                }
-                break;
-            case KEY_DOWN:
-                if (s.direction.y != -1)
-                {
-                    s.direction = (direction){0, 0};
-                    s.direction.y = 1;
-                }
-                break;
-            case KEY_LEFT:
-                if (s.direction.x != 1)
-                {
-                    s.direction = (direction){0, 0};
-                    s.direction.x = -1;
-                }
-                break;
-            case KEY_RIGHT:
-                if (s.direction.x != -1)
-                {
-                    s.direction = (direction){0, 0};
-                    s.direction.x = 1;
-                }
-                break;
-            default:
-                break;
-            }
+            printw("%d ", i);
+            refresh();
+            sleep(1);
         }
-        speed = ((win.fps * 66) / ((int)pow(4, difficulty) * score + 100));
-        printw("snake speed: %.3f secs\n", speed / 30.0);
-        refresh();
 
-        usleep((int)((1.0 / win.fps) * 1000) * 1000);
-
-        if ((win.frame % speed) == 0)
+        int width, height;
+        switch (difficulty)
         {
-            position buffer = (position){(s.position[0].x + s.direction.x), (s.position[0].y + s.direction.y)};
-            for (int i = 0; i < s.length; i++)
-            {
-                position temp = s.position[i];
-                s.position[i] = buffer;
-                buffer = temp;
-            }
-            if (s.position[0].x == a.position.x && s.position[0].y == a.position.y)
-            {
-                bool overlap;
-                do
-                {
-                    overlap = false;
-                    position tempPosition = (position){randInt(win.width), randInt(win.height)};
-                    for (int i = 0; i < s.length; i++)
-                    {
-                        if (tempPosition.x == s.position[i].x && tempPosition.y == s.position[i].y)
-                        {
-                            overlap = true;
-                            break;
-                        }
-                    }
-                } while (overlap);
-                a.position = (position){randInt(win.width), randInt(win.height)};
-                score++;
+        case 1:
+            width = 30;
+            height = 15;
+            break;
+        case 2:
+            width = 20;
+            height = 10;
+            break;
+        case 3:
+            width = 14;
+            height = 6;
+            break;
+        default:
+            width = 20;
+            height = 10;
+            break;
+        }
+        window win = {fps, width, height, 0};
 
-                s.length++;
-                s.position = (position *)realloc(s.position, s.length * sizeof(position));
-                if (s.position == NULL)
-                    fail();
-                s.position[s.length - 1] = s.position[s.length - 2];
-            }
-            bool collide = false;
-            if (s.position[0].x < 0 || s.position[0].x > (win.width - 1) || s.position[0].y < 0 || s.position[0].y > (win.height - 1))
+        position *tempPtr = malloc(3 * sizeof(position));
+        if (tempPtr == NULL)
+            fail();
+        snake s = {tempPtr, {1, 0}, 3};
+        s.position[0] = (position){9, 4};
+        s.position[1] = (position){8, 4};
+        s.position[2] = (position){7, 4};
+
+        apple a = {{randInt(win.width), randInt(win.height)}};
+
+        int score = 0;
+        int speed = ((win.fps * 66) / ((int)pow(4, difficulty) * score + 100));
+
+        while (true)
+        {
+            clear(); // Clear window
+            refresh();
+
+            printw("score: %d\tframe: %d\n", score, win.frame);
+            draw(win, s, a); // Draw game
+
+            if (kbhit())
             {
-                collide = true;
-            }
-            for (int i = 1; i < s.length; i++)
-            {
-                if (collide)
+                key_code = getch();
+                flushinp();
+                // printw("%d\n", key_code);
+                switch (key_code)
                 {
+                case KEY_UP:
+                    if (s.direction.y != 1)
+                    {
+                        s.direction = (direction){0, 0};
+                        s.direction.y = -1;
+                    }
+                    break;
+                case KEY_DOWN:
+                    if (s.direction.y != -1)
+                    {
+                        s.direction = (direction){0, 0};
+                        s.direction.y = 1;
+                    }
+                    break;
+                case KEY_LEFT:
+                    if (s.direction.x != 1)
+                    {
+                        s.direction = (direction){0, 0};
+                        s.direction.x = -1;
+                    }
+                    break;
+                case KEY_RIGHT:
+                    if (s.direction.x != -1)
+                    {
+                        s.direction = (direction){0, 0};
+                        s.direction.x = 1;
+                    }
+                    break;
+                default:
                     break;
                 }
-                if ((s.position[0].x == s.position[i].x && s.position[0].y == s.position[i].y))
+            }
+            speed = ((win.fps * 66) / ((int)pow(4, difficulty) * score + 100));
+            printw("snake speed: %.3f secs\n", speed / 30.0);
+            refresh();
+
+            usleep((int)((1.0 / win.fps) * 1000) * 1000);
+
+            if ((win.frame % speed) == 0)
+            {
+                position buffer = (position){(s.position[0].x + s.direction.x), (s.position[0].y + s.direction.y)};
+                for (int i = 0; i < s.length; i++)
+                {
+                    position temp = s.position[i];
+                    s.position[i] = buffer;
+                    buffer = temp;
+                }
+                if (s.position[0].x == a.position.x && s.position[0].y == a.position.y)
+                {
+                    bool overlap;
+                    do
+                    {
+                        overlap = false;
+                        position tempPosition = (position){randInt(win.width), randInt(win.height)};
+                        for (int i = 0; i < s.length; i++)
+                        {
+                            if (tempPosition.x == s.position[i].x && tempPosition.y == s.position[i].y)
+                            {
+                                overlap = true;
+                                break;
+                            }
+                        }
+                    } while (overlap);
+                    a.position = (position){randInt(win.width), randInt(win.height)};
+                    score++;
+
+                    s.length++;
+                    s.position = (position *)realloc(s.position, s.length * sizeof(position));
+                    if (s.position == NULL)
+                        fail();
+                    s.position[s.length - 1] = s.position[s.length - 2];
+                }
+                bool collide = false;
+                if (s.position[0].x < 0 || s.position[0].x > (win.width - 1) || s.position[0].y < 0 || s.position[0].y > (win.height - 1))
                 {
                     collide = true;
                 }
+                for (int i = 1; i < s.length; i++)
+                {
+                    if (collide)
+                    {
+                        break;
+                    }
+                    if ((s.position[0].x == s.position[i].x && s.position[0].y == s.position[i].y))
+                    {
+                        collide = true;
+                    }
+                }
+                if (collide)
+                {
+                    printw("Game over!\n");
+                    refresh();
+                    sleep(1);
+                    break;
+                }
             }
-            if (collide)
-            {
-                printw("Game over!\n");
-                refresh();
-                sleep(10);
-                break;
-            }
+            win.frame++;
         }
-        win.frame++;
-    }
 
+        printw("\nPlay again?\n\n");
+        char *yesno[2] = {"YES", "NO"};
+        int playAgain = choose(1, yesno, NELEMS(yesno));
+        if (playAgain == 2)
+        {
+            playing = false;
+        }
+    }
     endwin();
     return 0;
 }
