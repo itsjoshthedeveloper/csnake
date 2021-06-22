@@ -374,6 +374,8 @@ int main()
             // printw("snake speed: %.3f secs\n", speed / 30.0);
             refresh();
 
+            usleep((int)((1.0 / win.fps) * 1000) * 1000);
+
             if ((win.frame % speed) == 0)
             {
                 // Update snake movement
@@ -430,7 +432,6 @@ int main()
                 }
             }
 
-            usleep((int)((1.0 / win.fps) * 1000) * 1000);
             win.frame++;
         }
 
