@@ -17,4 +17,4 @@ snake game in C
 - [x] Allow player to play again
 - [x] Allow player to skip instructions
 - [x] Keep track of high score
-- [ ] Add good inline documentation
+- [x] Add good inline documentation

@@ -7,8 +7,10 @@
 #include <string.h>
 #include <math.h>
 
+// Macro to count elements in an array
 #define NELEMS(x) (sizeof(x) / sizeof((x)[0]))
 
+// Game window
 typedef struct
 {
     int fps;
@@ -17,18 +19,21 @@ typedef struct
     int frame;
 } window;
 
+// Position coordinates
 typedef struct
 {
     int x;
     int y;
 } position;
 
+// Direction unit vector
 typedef struct
 {
     int x;
     int y;
 } direction;
 
+// Snake (player)
 typedef struct
 {
     position *position;
@@ -36,11 +41,13 @@ typedef struct
     int length;
 } snake;
 
+// Apple
 typedef struct
 {
     position position;
 } apple;
 
+// Check if any key has been pressed
 int kbhit(void)
 {
     int ch = getch();
@@ -56,31 +63,37 @@ int kbhit(void)
     }
 }
 
+// Get a random integer from 0 - max
 int randInt(int max)
 {
     return rand() % max;
 }
 
+// Function for when malloc fails
 void fail(void)
 {
     printw("Memory could not be allocated\n");
     exit(EXIT_FAILURE);
 }
 
+// Draw game window with snake and apple
 void draw(window win, snake s, apple a)
 {
     for (int i = -1; i <= win.height; i++)
     {
         for (int j = -1; j <= win.width; j++)
         {
+            // Render border
             if ((i == -1 || i == win.height) || (j == -1 || j == win.width))
             {
                 printw("#");
             }
+            // Render snake head
             else if (j == s.position[0].x && i == s.position[0].y)
             {
                 printw("O");
             }
+            // Render apple
             else if (j == a.position.x && i == a.position.y)
             {
                 printw("X");
@@ -97,10 +110,12 @@ void draw(window win, snake s, apple a)
                     }
                 }
 
+                // Render snake body
                 if (snakeBody)
                 {
                     printw("o");
                 }
+                // Render empty space
                 else
                 {
                     printw(" ");
@@ -111,11 +126,13 @@ void draw(window win, snake s, apple a)
     }
 }
 
+// Ask the user to visually choose from several choices
 int choose(char msg[], int initialChoice, char *choices[], size_t length)
 {
     int choice = initialChoice;
     int y, x, key_code;
 
+    // Print message
     printw("\n%s\n\n", msg);
 
     bool chose = false;
@@ -126,8 +143,10 @@ int choose(char msg[], int initialChoice, char *choices[], size_t length)
         clrtoeol();
         refresh();
 
+        // Display choices
         for (int i = 1; i <= length; i++)
         {
+            // Highlight selected choice
             if (i == choice)
             {
                 attron(A_STANDOUT);
@@ -142,6 +161,8 @@ int choose(char msg[], int initialChoice, char *choices[], size_t length)
         }
         printw("\n");
         refresh();
+
+        // Handle choice selection
         if (kbhit())
         {
             key_code = getch();
@@ -181,10 +202,12 @@ int choose(char msg[], int initialChoice, char *choices[], size_t length)
     return choice;
 }
 
-position getNewApplePosition(window win, snake s)
+// Get a new spawning position for apple
+position getAppleSpawn(window win, snake s)
 {
     position pos;
     bool overlap;
+    // Ensure new position doesn't overlap with snake body
     do
     {
         overlap = false;
@@ -221,7 +244,8 @@ int main()
     refresh();
     sleep(2);
 
-    if (choose("Display instructions?", 2, yesno, NELEMS(yesno)) == 1)
+    // Ask user to skip instructions
+    if (choose("Skip instructions?", 1, yesno, NELEMS(yesno)) == 2)
     {
         printw("\nInstructions: Maneuver the snake to eat the apples (X). Make sure not to run into any walls or into the snake tail.\n");
         refresh();
@@ -246,8 +270,10 @@ int main()
     while (playing)
     {
         char *difficulties[3] = {"SLUG", "WORM", "PYTHON"};
+        // Ask user to choose difficulty level
         difficulty = choose("Choose difficulty level:", difficulty, difficulties, NELEMS(difficulties));
 
+        // Starting animation
         printw("\nStarting in ");
         refresh();
         sleep(1);
@@ -258,6 +284,7 @@ int main()
             sleep(1);
         }
 
+        // Generate game window object
         int width, height;
         switch (difficulty)
         {
@@ -280,6 +307,7 @@ int main()
         }
         window win = {fps, width, height, 0};
 
+        // Generate snake object
         position *tempPtr = malloc(3 * sizeof(position));
         if (tempPtr == NULL)
             fail();
@@ -288,7 +316,8 @@ int main()
         s.position[1] = (position){8, 4};
         s.position[2] = (position){7, 4};
 
-        apple a = {getNewApplePosition(win, s)};
+        // Generate apple object
+        apple a = {getAppleSpawn(win, s)};
 
         int score = 0;
         int speed = ((win.fps * 66) / ((int)pow(4, difficulty) * score + 100));
@@ -306,6 +335,7 @@ int main()
                 key_code = getch();
                 flushinp();
                 // printw("%d\n", key_code);
+                // Change snake direction depending on arrow key controls
                 switch (key_code)
                 {
                 case KEY_UP:
@@ -346,6 +376,7 @@ int main()
 
             if ((win.frame % speed) == 0)
             {
+                // Update snake movement
                 position buffer = (position){(s.position[0].x + s.direction.x), (s.position[0].y + s.direction.y)};
                 for (int i = 0; i < s.length; i++)
                 {
@@ -353,6 +384,7 @@ int main()
                     s.position[i] = buffer;
                     buffer = temp;
                 }
+                // Check if snake eats apple
                 if (s.position[0].x == a.position.x && s.position[0].y == a.position.y)
                 {
                     s.length++;
@@ -361,9 +393,10 @@ int main()
                         fail();
                     s.position[s.length - 1] = s.position[s.length - 2];
 
-                    a.position = getNewApplePosition(win, s);
+                    a.position = getAppleSpawn(win, s);
                     score++;
                 }
+                // Checks if snake head collides with borders or snake body
                 bool collide = false;
                 if (s.position[0].x < 0 || s.position[0].x > (win.width - 1) || s.position[0].y < 0 || s.position[0].y > (win.height - 1))
                 {
@@ -371,6 +404,7 @@ int main()
                 }
                 for (int i = 1; i < s.length; i++)
                 {
+                    // Breaks loop early if snake head has collided
                     if (collide)
                     {
                         break;
@@ -384,6 +418,7 @@ int main()
                 {
                     printw("Game over!\n");
                     printw("Your score is %d!\n", score);
+                    // Update highscore
                     if (score > highscore[difficulty - 1])
                     {
                         printw("You just made a new highscore!\n");
@@ -399,6 +434,7 @@ int main()
             win.frame++;
         }
 
+        // Ask user to play again
         if (choose("Play again?", 1, yesno, NELEMS(yesno)) == 2)
         {
             playing = false;
