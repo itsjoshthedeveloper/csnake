@@ -181,6 +181,26 @@ int choose(char msg[], int initialChoice, char *choices[], size_t length)
     return choice;
 }
 
+position getNewApplePosition(window win, snake s)
+{
+    position pos;
+    bool overlap;
+    do
+    {
+        overlap = false;
+        pos = (position){randInt(win.width), randInt(win.height)};
+        for (int i = 0; i < s.length; i++)
+        {
+            if (pos.x == s.position[i].x && pos.y == s.position[i].y)
+            {
+                overlap = true;
+                break;
+            }
+        }
+    } while (overlap);
+    return pos;
+}
+
 int main()
 {
     srand(time(NULL));
@@ -193,13 +213,13 @@ int main()
     nodelay(stdscr, TRUE);  // No delay for input
     scrollok(stdscr, TRUE); // Not sure
 
-    int fps = 30;
+    int fps = 60;
     int key_code;
     char *yesno[2] = {"YES", "NO"};
 
     printw("Welcome to the Snake Game\n");
     refresh();
-    sleep(3);
+    sleep(2);
 
     if (choose("Display instructions?", 2, yesno, NELEMS(yesno)) == 1)
     {
@@ -267,7 +287,7 @@ int main()
         s.position[1] = (position){8, 4};
         s.position[2] = (position){7, 4};
 
-        apple a = {{randInt(win.width), randInt(win.height)}};
+        apple a = {getNewApplePosition(win, s)};
 
         int score = 0;
         int speed = ((win.fps * 66) / ((int)pow(4, difficulty) * score + 100));
@@ -323,8 +343,6 @@ int main()
             printw("snake speed: %.3f secs\n", speed / 30.0);
             refresh();
 
-            usleep((int)((1.0 / win.fps) * 1000) * 1000);
-
             if ((win.frame % speed) == 0)
             {
                 position buffer = (position){(s.position[0].x + s.direction.x), (s.position[0].y + s.direction.y)};
@@ -342,21 +360,7 @@ int main()
                         fail();
                     s.position[s.length - 1] = s.position[s.length - 2];
 
-                    bool overlap;
-                    do
-                    {
-                        overlap = false;
-                        position tempPosition = (position){randInt(win.width), randInt(win.height)};
-                        for (int i = 0; i < s.length; i++)
-                        {
-                            if (tempPosition.x == s.position[i].x && tempPosition.y == s.position[i].y)
-                            {
-                                overlap = true;
-                                break;
-                            }
-                        }
-                    } while (overlap);
-                    a.position = (position){randInt(win.width), randInt(win.height)};
+                    a.position = getNewApplePosition(win, s);
                     score++;
                 }
                 bool collide = false;
@@ -383,6 +387,8 @@ int main()
                     break;
                 }
             }
+
+            usleep((int)((1.0 / win.fps) * 1000) * 1000);
             win.frame++;
         }
 
