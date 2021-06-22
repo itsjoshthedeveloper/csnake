@@ -16,5 +16,5 @@ snake game in C
 - [x] Create difficulty levels (slug, worm, python)
 - [x] Allow player to play again
 - [x] Allow player to skip instructions
-- [ ] Keep track of high score
+- [x] Keep track of high score
 - [ ] Add good inline documentation

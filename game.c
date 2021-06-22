@@ -240,6 +240,7 @@ int main()
     }
 
     int difficulty = 1;
+    int highscore = 0;
     bool playing = true;
 
     while (playing)
@@ -297,7 +298,7 @@ int main()
             clear(); // Clear window
             refresh();
 
-            printw("score: %d\tframe: %d\n", score, win.frame);
+            printw("Score: %d    Highscore: %d\n", score, highscore);
             draw(win, s, a); // Draw game
 
             if (kbhit())
@@ -340,7 +341,7 @@ int main()
                 }
             }
             speed = ((win.fps * 66) / ((int)pow(4, difficulty) * score + 100));
-            printw("snake speed: %.3f secs\n", speed / 30.0);
+            // printw("snake speed: %.3f secs\n", speed / 30.0);
             refresh();
 
             if ((win.frame % speed) == 0)
@@ -382,6 +383,12 @@ int main()
                 if (collide)
                 {
                     printw("Game over!\n");
+                    if (score > highscore)
+                    {
+                        printw("New highscore!\n");
+                        highscore = score;
+                    }
+                    printw("Score: %d    Highscore: %d\n", score, highscore);
                     refresh();
                     sleep(1);
                     break;
