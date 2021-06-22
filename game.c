@@ -328,6 +328,12 @@ int main()
                 }
                 if (s.position[0].x == a.position.x && s.position[0].y == a.position.y)
                 {
+                    s.length++;
+                    s.position = (position *)realloc(s.position, s.length * sizeof(position));
+                    if (s.position == NULL)
+                        fail();
+                    s.position[s.length - 1] = s.position[s.length - 2];
+
                     bool overlap;
                     do
                     {
@@ -344,12 +350,6 @@ int main()
                     } while (overlap);
                     a.position = (position){randInt(win.width), randInt(win.height)};
                     score++;
-
-                    s.length++;
-                    s.position = (position *)realloc(s.position, s.length * sizeof(position));
-                    if (s.position == NULL)
-                        fail();
-                    s.position[s.length - 1] = s.position[s.length - 2];
                 }
                 bool collide = false;
                 if (s.position[0].x < 0 || s.position[0].x > (win.width - 1) || s.position[0].y < 0 || s.position[0].y > (win.height - 1))
