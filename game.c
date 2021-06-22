@@ -111,10 +111,13 @@ void draw(window win, snake s, apple a)
     }
 }
 
-int choose(int initialChoice, char *choices[], size_t length)
+int choose(char msg[], int initialChoice, char *choices[], size_t length)
 {
     int choice = initialChoice;
     int y, x, key_code;
+
+    printw("\n%s\n\n", msg);
+
     bool chose = false;
     while (!chose)
     {
@@ -192,32 +195,37 @@ int main()
 
     int fps = 30;
     int key_code;
+    char *yesno[2] = {"YES", "NO"};
 
     printw("Welcome to the Snake Game\n");
     refresh();
     sleep(3);
 
-    printw("\nInstructions: Maneuver the snake to eat the apples (X). Make sure not to run into any walls or into the snake tail.\n");
-    refresh();
-    sleep(5);
+    if (choose("Display instructions?", 2, yesno, NELEMS(yesno)) == 1)
+    {
+        printw("\nInstructions: Maneuver the snake to eat the apples (X). Make sure not to run into any walls or into the snake tail.\n");
+        refresh();
+        sleep(5);
 
-    printw("\nControls:\n");
-    printw("\tSnake movement: arrow keys\n");
-    refresh();
-    sleep(3);
+        printw("\nControls:\n");
+        printw("\tSnake movement: arrow keys\n");
+        refresh();
+        sleep(3);
 
-    printw("\nObjective: Get the highest score!\n");
-    refresh();
-    sleep(5);
+        printw("\nObjective: Get the highest score!\n");
+        refresh();
+        sleep(5);
 
+        clear();
+    }
+
+    int difficulty = 1;
     bool playing = true;
 
     while (playing)
     {
-        clear();
-        printw("\nChoose difficulty level:\n\n");
         char *difficulties[3] = {"SLUG", "WORM", "PYTHON"};
-        int difficulty = choose(1, difficulties, NELEMS(difficulties));
+        difficulty = choose("Choose difficulty level:", difficulty, difficulties, NELEMS(difficulties));
 
         printw("\nStarting in ");
         refresh();
@@ -378,10 +386,7 @@ int main()
             win.frame++;
         }
 
-        printw("\nPlay again?\n\n");
-        char *yesno[2] = {"YES", "NO"};
-        int playAgain = choose(1, yesno, NELEMS(yesno));
-        if (playAgain == 2)
+        if (choose("Play again?", 1, yesno, NELEMS(yesno)) == 2)
         {
             playing = false;
         }
