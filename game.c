@@ -240,7 +240,7 @@ int main()
     }
 
     int difficulty = 1;
-    int highscore = 0;
+    int highscore[3] = {0, 0, 0};
     bool playing = true;
 
     while (playing)
@@ -298,7 +298,7 @@ int main()
             clear(); // Clear window
             refresh();
 
-            printw("Score: %d    Highscore: %d\n", score, highscore);
+            printw("Score: %d    Highscore: %d\n", score, highscore[difficulty - 1]);
             draw(win, s, a); // Draw game
 
             if (kbhit())
@@ -383,12 +383,12 @@ int main()
                 if (collide)
                 {
                     printw("Game over!\n");
-                    if (score > highscore)
+                    printw("Your score is %d!\n", score);
+                    if (score > highscore[difficulty - 1])
                     {
-                        printw("New highscore!\n");
-                        highscore = score;
+                        printw("You just made a new highscore!\n");
+                        highscore[difficulty - 1] = score;
                     }
-                    printw("Score: %d    Highscore: %d\n", score, highscore);
                     refresh();
                     sleep(1);
                     break;
