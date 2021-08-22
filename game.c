@@ -224,6 +224,21 @@ position getAppleSpawn(window win, snake s)
     return pos;
 }
 
+// Move snake positions
+position moveSnake(int n, snake s)
+{
+    position temp = s.position[n];
+    if (n == 0)
+    {
+        s.position[n] = (position){(s.position[n].x + s.direction.x), (s.position[n].y + s.direction.y)};
+    }
+    else
+    {
+        s.position[n] = moveSnake(n - 1, s);
+    }
+    return temp;
+}
+
 int main()
 {
     srand(time(NULL));
@@ -379,13 +394,7 @@ int main()
             if ((win.frame % speed) == 0)
             {
                 // Update snake movement
-                position buffer = (position){(s.position[0].x + s.direction.x), (s.position[0].y + s.direction.y)};
-                for (int i = 0; i < s.length; i++)
-                {
-                    position temp = s.position[i];
-                    s.position[i] = buffer;
-                    buffer = temp;
-                }
+                moveSnake(s.length - 1, s);
                 // Check if snake eats apple
                 if (s.position[0].x == a.position.x && s.position[0].y == a.position.y)
                 {
