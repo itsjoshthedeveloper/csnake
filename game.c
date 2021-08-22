@@ -13,24 +13,24 @@
 // Game window
 typedef struct
 {
-    int fps;
+    unsigned int fps;
     int width;
     int height;
-    int frame;
+    unsigned int frame;
 } window;
 
 // Position coordinates
 typedef struct
 {
-    int x;
-    int y;
+    unsigned int x;
+    unsigned int y;
 } position;
 
 // Direction unit vector
 typedef struct
 {
-    int x;
-    int y;
+    unsigned int x;
+    unsigned int y;
 } direction;
 
 // Snake (player)
@@ -38,7 +38,7 @@ typedef struct
 {
     position *position;
     direction direction;
-    int length;
+    unsigned int length;
 } snake;
 
 // Apple
@@ -64,7 +64,7 @@ int kbhit(void)
 }
 
 // Get a random integer from 0 - max
-int randInt(int max)
+unsigned int randInt(unsigned int max)
 {
     return rand() % max;
 }
@@ -101,7 +101,7 @@ void draw(window win, snake s, apple a)
             else
             {
                 bool snakeBody = false;
-                for (int k = 1; k < s.length; k++)
+                for (unsigned int k = 1; k < s.length; k++)
                 {
                     if (j == s.position[k].x && i == s.position[k].y)
                     {
@@ -127,10 +127,11 @@ void draw(window win, snake s, apple a)
 }
 
 // Ask the user to visually choose from several choices
-int choose(char msg[], int initialChoice, char *choices[], size_t length)
+unsigned int choose(char msg[], unsigned int initialChoice, char *choices[], size_t length)
 {
-    int choice = initialChoice;
-    int y, x, key_code;
+    unsigned int choice = initialChoice;
+    unsigned int y, x;
+    int key_code;
 
     // Print message
     printw("\n%s\n\n", msg);
@@ -144,7 +145,7 @@ int choose(char msg[], int initialChoice, char *choices[], size_t length)
         refresh();
 
         // Display choices
-        for (int i = 1; i <= length; i++)
+        for (unsigned int i = 1; i <= length; i++)
         {
             // Highlight selected choice
             if (i == choice)
@@ -197,7 +198,7 @@ int choose(char msg[], int initialChoice, char *choices[], size_t length)
                 break;
             }
         }
-        usleep((int)((1.0 / 30) * 1000) * 1000);
+        usleep((unsigned int)((1.0 / 30) * 1000) * 1000);
     }
     return choice;
 }
@@ -212,7 +213,7 @@ position getAppleSpawn(window win, snake s)
     {
         overlap = false;
         pos = (position){randInt(win.width), randInt(win.height)};
-        for (int i = 0; i < s.length; i++)
+        for (unsigned int i = 0; i < s.length; i++)
         {
             if (pos.x == s.position[i].x && pos.y == s.position[i].y)
             {
@@ -225,7 +226,7 @@ position getAppleSpawn(window win, snake s)
 }
 
 // Move snake positions
-position moveSnake(int n, snake s)
+position moveSnake(unsigned int n, snake s)
 {
     position temp = s.position[n];
     if (n == 0)
@@ -251,7 +252,7 @@ int main()
     nodelay(stdscr, TRUE);  // No delay for input
     scrollok(stdscr, TRUE); // Not sure
 
-    int fps = 60;
+    unsigned int fps = 60;
     int key_code;
     char *yesno[2] = {"YES", "NO"};
 
@@ -278,8 +279,8 @@ int main()
         clear();
     }
 
-    int difficulty = 1;
-    int highscore[3] = {0, 0, 0};
+    unsigned int difficulty = 1;
+    unsigned int highscore[3] = {0, 0, 0};
     bool playing = true;
 
     while (playing)
@@ -292,7 +293,7 @@ int main()
         printw("\nStarting in ");
         refresh();
         sleep(1);
-        for (int i = 3; i > 0; i--)
+        for (unsigned int i = 3; i > 0; i--)
         {
             printw("%d ", i);
             refresh();
@@ -334,8 +335,8 @@ int main()
         // Generate apple object
         apple a = {getAppleSpawn(win, s)};
 
-        int score = 0;
-        int speed = ((win.fps * 66) / ((int)pow(4, difficulty) * score + 100));
+        unsigned int score = 0;
+        unsigned int speed = ((win.fps * 66) / ((unsigned int)pow(4, difficulty) * score + 100));
 
         while (true)
         {
@@ -385,7 +386,7 @@ int main()
                     break;
                 }
             }
-            speed = ((win.fps * 66) / ((int)pow(4, difficulty) * score + 100));
+            speed = ((win.fps * 66) / ((unsigned int)pow(4, difficulty) * score + 100));
             // printw("snake speed: %.3f secs\n", speed / 30.0);
             refresh();
 
@@ -413,7 +414,7 @@ int main()
                 {
                     collide = true;
                 }
-                for (int i = 1; i < s.length; i++)
+                for (unsigned int i = 1; i < s.length; i++)
                 {
                     // Breaks loop early if snake head has collided
                     if (collide)
