@@ -1,7 +1,16 @@
 # csnake
+
 snake game in C
 
-### TODO
+### How to run
+
+[![Run on Repl.it](https://repl.it/badge/github/itsjoshthedeveloper/csnake)](https://repl.it/github/itsjoshthedeveloper/csnake)
+
+1. Select language: `Bash`
+2. Configure the run button: `gcc game.c -o game -lm -lncurses && \"/home/runner/csnake/\"game`
+
+<details>
+  <summary>TODO</summary>
 
 - [x] Generate basic game window 
 - [x] Add snake movement and collisions
@@ -18,3 +27,5 @@ snake game in C
 - [x] Allow player to skip instructions
 - [x] Keep track of high score
 - [x] Add good inline documentation
+
+</details>
