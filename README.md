@@ -7,7 +7,7 @@ snake game in C
 [![Run on Repl.it](https://repl.it/badge/github/itsjoshthedeveloper/csnake)](https://repl.it/github/itsjoshthedeveloper/csnake)
 
 1. Select language: `Bash`
-2. Configure the run button: `gcc game.c -o game -lm -lncurses && \"/home/runner/csnake/\"game`
+2. Configure the run button: `gcc game.c -o game -lm -lncurses && "/home/runner/csnake/"game`
 
 <details>
   <summary>TODO</summary>
